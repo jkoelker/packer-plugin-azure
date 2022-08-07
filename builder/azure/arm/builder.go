@@ -531,6 +531,13 @@ func (b *Builder) managedImageArtifactWithSIGAsDestination(managedImageID string
 		stateData[key] = v
 	}
 
+	destinationSharedImageGalleryId := ""
+	if galleryID, ok := b.stateBag.GetOk(constants.ArmManagedImageSharedGalleryId); ok {
+		destinationSharedImageGalleryId = galleryID.(string)
+	} else {
+		return nil, errors.New("failed to find shared image gallery id in state")
+	}
+
 	return NewManagedImageArtifactWithSIGAsDestination(b.config.OSType,
 		b.config.ManagedImageResourceGroupName,
 		b.config.ManagedImageName,
@@ -538,6 +545,6 @@ func (b *Builder) managedImageArtifactWithSIGAsDestination(managedImageID string
 		managedImageID,
 		b.config.ManagedImageOSDiskSnapshotName,
 		b.config.ManagedImageDataDiskSnapshotPrefix,
-		b.stateBag.Get(constants.ArmManagedImageSharedGalleryId).(string),
+		destinationSharedImageGalleryId,
 		stateData)
 }
