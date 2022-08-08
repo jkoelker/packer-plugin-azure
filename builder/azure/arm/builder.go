@@ -318,6 +318,11 @@ func (b *Builder) Run(ctx context.Context, ui packersdk.Ui, hook packersdk.Hook)
 		return nil, errors.New("Build was halted.")
 	}
 
+	if _, ok := b.stateBag.GetOk(constants.ArmCaptureTemplate); !ok {
+		// NOTE(jkoelker) if the capture was skipped, then just return
+		return nil, nil
+	}
+
 	getSasUrlFunc := func(name string) string {
 		blob := azureClient.BlobStorageClient.GetContainerReference(DefaultSasBlobContainer).GetBlobReference(name)
 		options := storage.BlobSASOptions{}
